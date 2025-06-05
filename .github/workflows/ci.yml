@@ -6,8 +6,11 @@ on:
       - 'main'
 
 jobs:
+
   build-push-image:
     runs-on: ubuntu-latest
+    environment: dev
+    
     steps:
       -
         name: Checkout
