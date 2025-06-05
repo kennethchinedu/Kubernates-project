@@ -32,7 +32,8 @@ jobs:
         name: show pwd
         run: |
           pwd
-          ls -la
+          ls -la charido-landing-page
+          ls -la online-angels-landing-page
       # -
       #   name: Set up QEMU
       #   uses: docker/setup-qemu-action@v3 
