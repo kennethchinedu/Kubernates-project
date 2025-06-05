@@ -31,6 +31,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./charido-landing-page/.
+          context: /charido-landing-page/.
           push: true
           tags: app:latest 
