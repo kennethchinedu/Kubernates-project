@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: charido-app
+  name: frontend-app
   namespace: default
   labels:
-    app: charido
+    app: frontend-app
 spec:
   selector:
     matchLabels:
-      app: charido
+      app: frontend-app
   replicas: 2
   strategy:
     rollingUpdate:
@@ -19,15 +19,11 @@ spec:
   template:
     metadata:
       labels:
-        app: charido
+        app: frontend-app
     spec:
-      # initContainers:
-        # Init containers are exactly like regular containers, except:
-          # - Init containers always run to completion.
-          # - Each init container must complete successfully before the next one starts.
       containers:
       - name: charido-app
-        image: charido
+        image: anamskenneth/next_js_aws_devop_project_frontend:latest
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -36,26 +32,60 @@ spec:
           limits:
             cpu: 100m
             memory: 100Mi
-        # env:
-        # - name: DB_HOST
-        #   valueFrom:
-        #     configMapKeyRef:
-        #       name: myjob
-        #       key: DB_HOST
-        # - name: DB_HOST
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: myjob
-        #       key: MSSQL_SA_PASSWORD
         ports:
-        - containerPort: 3000
+        - containerPort: 5173
           name: charido-port
         volumeMounts:
-        - name: main-app
+        - name: mainapp
           mountPath: /etc/charido
       volumes:
-        - name: main-app
-          hostPath:
-            path: ./main-app
+        - name: mainapp
+          # hostPath:
+          #   path: ./main-app
       # restartPolicy: Always
 --- 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  namespace: default
+  labels:
+    app: backend-app
+spec:
+  selector:
+    matchLabels:
+      app: backend-app
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      containers:
+      - name: backend-app
+        image: anamskenneth/next_js_aws_devop_project_backend:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 5173
+          name: charido-port
+        volumeMounts:
+        - name: mainapp
+          mountPath: /etc/online-angels
+      volumes:
+        - name: mainapp
+          # hostPath:
+          #   path: ./main-app
+      # restartPolicy: Always
