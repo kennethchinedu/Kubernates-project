@@ -1,0 +1,66 @@
+# version: '3.8'
+services:
+
+  db:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - prod_network
+    #confirming db rediness
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+#backend
+  backend:
+    depends_on:
+      - db
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # command: npm run dev 
+    networks:
+    - prod_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:5173"
+    depends_on:
+      - backend
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # command: npm run dev
+    networks:
+      - prod_network
+
+
+  
+
+volumes:
+  postgres_data:
+
+
+networks:
+  prod_network:
+    driver: bridge

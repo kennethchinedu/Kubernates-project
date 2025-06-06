@@ -1,0 +1,104 @@
+name: Dev_ci
+
+# This workflow is triggered whenever a new PR is created on the dev branch
+on:
+  pull_request:
+    branches:
+      - dev 
+
+
+    
+jobs:
+  # Building the project to make sure everything is ok
+  test:
+    name: 'Run Frontend and Backend Tests'
+    runs-on: ubuntu-latest
+    environment: staging
+    defaults:
+      run:
+        shell: bash  # Properly indented here
+        
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v2
+      
+      # Set environment variables
+      - name: 'Set up environment variables'
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          cp .env ./backend/.env
+      
+      # Backend Build
+      - name: 'Install Backend Dependencies'
+        working-directory: ./backend
+        run: npm install 
+        
+      - name: 'Run Data Migration'
+        working-directory: ./backend
+        run: npx prisma migrate dev 
+        
+      - name: 'Build Backend Server'
+        working-directory: ./backend
+        run: npm run build
+        
+      # Frontend Build
+      - name: 'Install Frontend Dependencies'
+        working-directory: ./frontend 
+        run: npm install
+        
+      - name: 'Build Frontend Server'
+        working-directory: ./frontend 
+        run: npm run build
+
+  # # Auto-merge the PR branch into dev after successful tests
+  # auto_merge_to_dev:
+  #   name: 'Auto Merge PR branch into Dev'
+  #   needs: test  # Run this after the test job passes
+  #   runs-on: ubuntu-latest 
+  #   environment: staging
+
+  #   steps:
+  #     - name: 'Checkout repository'
+  #       uses: actions/checkout@v2
+  #       with:
+  #         ref: ${{ github.head_ref }}  
+
+  #     - name: 'Set up Git'
+  #       run: |
+  #         git config --global user.name 'github-actions[bot]'
+  #         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      
+  #     - name: 'Fetch all branches'
+  #       run: git fetch --all
+
+  #     - name: 'Checkout dev branch'
+  #       run: git checkout dev
+
+  #     - name: 'Merge PR branch into dev'
+  #       run: git merge ${{ github.head_ref }} --no-ff --allow-unrelated-histories
+
+  #     - name: 'Push changes to dev'
+  #       run: git push origin dev
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+  
+  # # Delete branch after successful merge
+  # delete_branch:
+  #   name: 'Delete Merged Branch'
+  #   needs: auto_merge_to_dev  # Run this after the merge is successful
+  #   runs-on: ubuntu-latest
+  #   environment: staging
+
+  #   steps:
+  #     - name: 'Delete branch'
+  #       run: |
+  #         BRANCH_NAME=${{ github.head_ref }}
+  #         if [ "$BRANCH_NAME" != "dev" ]; then
+  #           git push origin --delete $BRANCH_NAME
+  #         fi
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.G_TOKEN }}

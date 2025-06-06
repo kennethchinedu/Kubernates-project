@@ -1,0 +1,106 @@
+name: Deploy_app
+
+on:
+  workflow_run:
+    workflows: ["Cd_build"]
+    types:
+      - completed
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: 'us-east-1'
+  
+
+jobs:
+  terraform:
+    name: 'terraform_setup'
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v2
+
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.0.11
+
+      - name: 'Terraform Init'
+        run: terraform init -lock=false
+        working-directory: ./infra 
+
+      - name: 'Terraform Plan'
+        run: terraform plan -var-file=terraform.tfvars -lock=false
+        working-directory: ./infra
+
+      - name: 'Terraform Apply'
+        run: terraform apply -auto-approve -var-file=terraform.tfvars -lock=false
+        working-directory: ./infra
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
+
+      - name: Capture Terraform Outputs
+        id: capture_outputs
+        run: |
+          EC2_PUBLIC_IP=$(terraform output -raw ec2_public_ip 2>/dev/null || echo "")
+          # SSH_PRIVATE_KEY=$(terraform output -raw ssh_private_key 2>/dev/null || echo "")
+          USER=$(terraform output -raw user_name 2>/dev/null || echo "")
+
+          echo "EC2_PUBLIC_IP=$EC2_PUBLIC_IP" >> $GITHUB_ENV
+          echo "USER=$USER" >> $GITHUB_ENV
+
+          # Format the SSH private key correctly and save to file
+          # echo -e "\n$SSH_PRIVATE_KEY\n" | sed 's/\\n/\n/g' > private_key.pem
+          # chmod 600 private_key.pem
+          # echo "private key saved"
+        working-directory: ./infra
+
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private_key
+          chmod 600 ~/.ssh/private_key
+      
+      - name: Transfer server_setup.sh to EC2
+      # Use scp to transfer server_setup.sh to the EC2 instance
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/private_key server_setup.sh ${USER}@${EC2_PUBLIC_IP}:/home/${USER}/server_setup.sh 
+          echo "copy successful"
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key ${USER}@${EC2_PUBLIC_IP} "
+            echo 'Sign-in successful, initiating setup...';
+            
+            # Export environment variables for use in the script
+            export DATABASE_URL=${DATABASE_URL};
+            export POSTGRES_DB=${POSTGRES_DB};
+            export POSTGRES_PASSWORD=${POSTGRES_PASSWORD};
+            export POSTGRES_PORT=${POSTGRES_PORT};
+            export POSTGRES_USER=${POSTGRES_USER};
+            export DOCKER_USERNAME=${DOCKER_USERNAME};
+            export DOCKER_PASSWORD=${DOCKER_PASSWORD};
+      
+            # Make sure the server_setup.sh file is executable
+            chmod +x ./server_setup.sh;
+    
+            # Run the server setup script
+            ./server_setup.sh;
+          "
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    
+
+  
