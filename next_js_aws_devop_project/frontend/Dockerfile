@@ -5,10 +5,13 @@ WORKDIR /usr/src/frontend
 
 COPY package*.json .
 
+RUN npm install
+
 COPY . .
 
-RUN npm install
-RUN npm audit fix --force
+
+# RUN npm run build
+# RUN npm audit fix --force
 
 
 EXPOSE 5173
