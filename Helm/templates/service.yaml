@@ -11,5 +11,6 @@ spec:
     - port: 80 
       targetPort: {{ .Values.service.frontendPort }} 
       protocol: TCP 
-  type: {{ .Values.service.type }}
+  type: NodePort
+  
   

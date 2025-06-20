@@ -20,7 +20,7 @@ spec:
       {{- end }}
       labels:
         {{- include "recipe-app.labels" . | nindent 8 }}
-        # {{-  .Values.podLabels.frontend | indent 8}} #not added pod labels yet
+        # {{-  .Values.podLabels.backend | indent 8}} #not added pod labels yet
         
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -62,6 +62,7 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      emptyDir: {}
       
 
 
@@ -131,4 +132,5 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      emptyDir: {}
       
