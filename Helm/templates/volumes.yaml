@@ -1,0 +1,33 @@
+apiVersion: v1 
+kind: PersistentVolume
+metadata: 
+  name: {{ include "recipe-app.fullname" . }}-pv
+  labels: 
+    {{- include "recipe-app.labels" . | nindent 4 }}
+spec: 
+  storageClassName: {{ .Values.pv.storageClassName }} 
+  capacity: 
+    storage:  {{ .Values.pv.size }} 
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+     path: {{ .Values.pv.mountPath }} 
+     type: {{ .Values.pv.type }} 
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name:metadata:
+  name: {{ if .Values.pv.pvcName }}{{ .Values.pv.pvcName }}{{ else }}{{ include "recipe-app.fullname" . }}-pvc{{ end }}
+  labels:
+    {{- include "recipe-app.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.pv.storageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pv.size }}
+  volumeName: {{ include "recipe-app.fullname" . }}-pv

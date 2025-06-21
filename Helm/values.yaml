@@ -100,6 +100,11 @@ autoscaling:
 # Additional volumes on the output Deployment definition.
 volumes: 
 - name: dev-data
+  # emptyDir: {} 
+  persistentVolumeClaim:
+        claimName: myclaim
+
+ 
 #   secret:
 #     secretName: mysecret
 #     optional: false
@@ -110,8 +115,20 @@ volumeMounts:
   mountPath: "/etc/dev"
   readOnly: true
 
+ 
+
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+pv: 
+  enabled: false
+  storageClassName: "hostpath"
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  type: DirectoryOrCreate
+  mountPath: "/etc/dev" 
+  pvcName: "myclaim"

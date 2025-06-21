@@ -25,6 +25,7 @@ Expand the name of the chart.
 
 
 
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -53,6 +54,22 @@ Selector labels
 {{- define "recipe-app.selectorLabels" -}}
 name: {{ include "recipe-app.name" . }}
 {{- end }}
+
+{{- define "backend.selectorLabels" -}}
+app-name: {{ printf "%s-backend" (include "recipe-app.name" .) }}
+{{- end }}
+
+{{- define "frontend.selectorLabels" -}}
+app-name: {{ printf "%s-frontend" (include "recipe-app.name" .) }}
+{{- end }}
+
+
+{{/*}}
+Selector labels for frontend and backend
+*/}}
+
+
+
 
 {{/*
 Create the name of the service account to use

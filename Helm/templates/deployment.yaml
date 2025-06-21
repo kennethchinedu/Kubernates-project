@@ -11,6 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "recipe-app.selectorLabels" . | nindent 6 }}
+      {{- include "backend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     #Have not defined podAnnotations and podLabels in values.yaml yet
@@ -20,8 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "recipe-app.labels" . | nindent 8 }}
-        # {{-  .Values.podLabels.backend | indent 8}} #not added pod labels yet
-        
+        {{- include "backend.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -45,24 +45,16 @@ spec:
               # This is the port that the backend container listens on
               containerPort: {{ .Values.service.backendPort }}
               protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
-            
-          {{- end }}
+          {{- end }} 
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      emptyDir: {}
+        
+        
       
 
 
@@ -74,6 +66,7 @@ metadata:
   name: {{ include "recipe-app.frontendContainer" . }}
   labels:
     {{- include "recipe-app.labels" . | nindent 4 }}
+    
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -81,18 +74,17 @@ spec:
   selector:
     matchLabels:
       {{- include "recipe-app.selectorLabels" . | nindent 6 }}
+      {{- include "frontend.selectorLabels" . | nindent 6 }}
+      
+    {{/* 
+      The frontend container is the one that serves the user interface
+    */}}  
   template:
     metadata:
-    #Have not defined podAnnotations and podLabels in values.yaml yet
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+
       labels:
         {{- include "recipe-app.labels" . | nindent 8 }}
-        # {{- with .Values.podLabels }} #not added pod labels yet
-        # {{- toYaml . | nindent 8 }}
-        # {{- end }}
+        {{- include "frontend.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -132,5 +124,5 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      emptyDir: {}
+
       
