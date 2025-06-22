@@ -1,0 +1,7 @@
+variables*
+terraform.tfvars
+# Local .terraform directory
+.terraform/
+# Local .terraform.lock.hcl file
+.terraform.lock.hcl
+*.tfstate
