@@ -46,13 +46,13 @@ jobs:
       - name: Setting up env 
         run: |
           echo "Setting up environment variables"
-          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> .env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-          echo "PORT=${{ secrets.PORT}}" >> .env
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> next_js_aws_devop_project/backend/.env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >>  next_js_aws_devop_project/backend/.env
+          echo "PORT=${{ secrets.PORT}}" >>  next_js_aws_devop_project/backend/.env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >>  next_js_aws_devop_project/backend/.env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >>  next_js_aws_devop_project/backend/.env
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >>  next_js_aws_devop_project/backend/.env
+          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >>  next_js_aws_devop_project/backend/.env
 
       #Using makefile to run build and push images 
       - name: Building backend image
