@@ -17,19 +17,16 @@ jobs:
         uses: actions/checkout@v3
 
       #Running security scans on the codebase (NIST, FEDRAMP, OWASP, etc.)
-      - name: Run Trivy vulnerability scanner in repo mode
+      - name: Scan codebase with trivy 
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL'
+          output: 'trivy-code-results.sarif'
+          severity: 'CRITICAL, HIGH'
+          exit-code: '1' # Fail the action if vulnerabilities are found
       
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif' 
 
       #scanning the IaC files (Kubernetes)
       - name: Scan Kubernetes YAML folder
@@ -39,10 +36,21 @@ jobs:
           hide-progress: true
           input: './Helm/*'
           format: 'sarif'
-          output: 'trivy-results.sarif'
+          output: 'trivy-config-results.sarif'
           # exit-code: '1'
           severity: 'CRITICAL,HIGH'
 
+      - name: Upload codebase scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-code-results.sarif' 
+
+      - name: Upload codebase scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-config-results.sarif' 
+
+      #Setting up the environment variables for the backend and frontend applications
       - name: Setting up env 
         run: |
           echo "Setting up environment variables"
@@ -65,17 +73,16 @@ jobs:
           echo "Building frontend image using Makefile"
           make build_frontend_image
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-          
       - name: View docker images
         run: |
           echo "Listing Docker images"
           docker images
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
           
       #getting the current date for the image tag
       - name: Set current date as env variable
@@ -87,18 +94,15 @@ jobs:
       #   run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
 
       - name: Run Trivy vulnerability scanner in fs mode
-        uses: anandg112/trivy-action@feat/add-skip-dirs-option
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          ignore-unfixed: false
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          # output: 'trivy-results-fs.sarif'
-          severity: 'CRITICAL'
-          skip-dirs: "ignored-dir"
-          TRIVY_FORMAT: "table"
-          TRIVY_OUTPUT: "trivy-results-fs.sarif"
+          image-ref: .
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'table'
 
 
 #This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
@@ -139,11 +143,11 @@ jobs:
       #     #exit-code: '1' # Fail the action if vulnerabilities are found
       #     scan-type: 'image'   
 
-      - name: Pushing backend image to DockerHub
-        run: |
-          echo "Pushing backend image to DockerHub"
-          # make docker_login
-          make docker_push 
+      # - name: Pushing backend image to DockerHub
+      #   run: |
+      #     echo "Pushing backend image to DockerHub"
+      #     # make docker_login
+      #     make docker_push 
      
     
           
