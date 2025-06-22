@@ -75,7 +75,11 @@ jobs:
       - name: Set current date as env variable
         run: | 
           echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-          echo ${NOW}
+          echo ${{ env.NOW }}
+
+      - name: Debug image ref
+        run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:${{ env.NOW }}"
+
 
 
 
@@ -83,7 +87,7 @@ jobs:
       - name: Run Trivy vulnerability scanner in docker mode
         uses: aquasecurity/trivy-action@master
         with:
-         image-ref: '${{secrets.BACKEND_IMAGE}}:${NOW}'
+         image-ref: '${{ secrets.BACKEND_IMAGE }}:${{ env.NOW }}'
          format: 'template'
          template: '@/contrib/sarif.tpl'
          output: 'trivy-results-docker.sarif'
