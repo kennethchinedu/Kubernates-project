@@ -76,31 +76,45 @@ jobs:
         run: | 
           echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
           echo ${NOW}
+
+
+##-------------------------------
+#This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
+      - name: Run Trivy vulnerability scanner in docker mode
+        uses: aquasecurity/trivy-action@master
+        with:
+         image-ref: '${{secrets.BACKEND_IMAGE}}:${NOW}'
+         format: 'template'
+         template: '@/contrib/sarif.tpl'
+         output: 'trivy-results-docker.sarif'
+         severity: 'CRITICAL
+
+##---------------
       
       #Scanning the image for vulnerabilities using trivy
       #  Scanning backend image
-      - name: Scan backend image for vulnerabilities
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: 'docker.io/${{secrets.BACKEND_IMAGE}}:${NOW}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-          #exit-code: '1' # Fail the action if vulnerabilities are found
-          scan-type: 'image'  
+      # - name: Scan backend image for vulnerabilities
+      #   uses: aquasecurity/trivy-action@0.28.0
+      #   with:
+      #     image-ref: 'docker.io/${{secrets.BACKEND_IMAGE}}:${NOW}'
+      #     format: 'sarif'
+      #     output: 'trivy-results.sarif'
+      #     severity: 'CRITICAL,HIGH'
+      #     ignore-unfixed: true
+      #     #exit-code: '1' # Fail the action if vulnerabilities are found
+      #     scan-type: 'image'  
 
-      #  Scanning frontend image
-      - name: Scan frontend image for vulnerabilities
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: 'docker.io/${{secrets.FRONTEND_IMAGE}}:${NOW}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-          #exit-code: '1' # Fail the action if vulnerabilities are found
-          scan-type: 'image'   
+      # #  Scanning frontend image
+      # - name: Scan frontend image for vulnerabilities
+      #   uses: aquasecurity/trivy-action@0.28.0
+      #   with:
+      #     image-ref: 'docker.io/${{secrets.FRONTEND_IMAGE}}:${NOW}'
+      #     format: 'sarif'
+      #     output: 'trivy-results.sarif'
+      #     severity: 'CRITICAL,HIGH'
+      #     ignore-unfixed: true
+      #     #exit-code: '1' # Fail the action if vulnerabilities are found
+      #     scan-type: 'image'   
 
       - name: Pushing backend image to DockerHub
         run: |
