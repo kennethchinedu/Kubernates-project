@@ -50,7 +50,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-config-results.sarif' 
-          category: 'trivy-code'
+          category: 'trivy-config'
 
       #Setting up the environment variables for the backend and frontend applications
       - name: Setting up env 
