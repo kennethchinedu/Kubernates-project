@@ -37,7 +37,7 @@ jobs:
         with:
           scan-type: 'config'
           hide-progress: true
-          input: './Helm/'
+          # input: './Helm/'
           format: 'sarif'
           output: 'trivy-config-results.sarif'
           # exit-code: '1'
