@@ -23,7 +23,7 @@ jobs:
           scan-type: 'fs'
           ignore-unfixed: true
           format: 'sarif'
-          output: 'table'
+          output:  'trivy-code-results.sarif' 
           severity: 'CRITICAL, HIGH'
           # exit-code: '1' # Fail the action if vulnerabilities are found
       
