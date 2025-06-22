@@ -65,7 +65,13 @@ jobs:
           echo "Building frontend image using Makefile"
           make build_frontend_image
 
-      
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
       - name: Pushing backend image to DockerHub
         run: |
           echo "Pushing backend image to DockerHub"

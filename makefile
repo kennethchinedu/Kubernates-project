@@ -21,7 +21,7 @@ build_frontend_image:
 	docker build --no-cache -t $(IMAGE_DIRECTORY)/$(FRONTEND_IMAGE)  next_js_aws_devop_project/frontend/.
 
 docker_login:
-	echo $${{ secrets.DOCKER_PASSWORD }} | docker login -u $${{ secrets.DOCKER_USERNAME }} --password-stdin; \
+	echo $${{ secrets.DOCKER_TOKEN }} | docker login -u $${{ secrets.DOCKER_USERNAME }} --password-stdin; \
 	echo "Docker login successful";
 
 ps: 
