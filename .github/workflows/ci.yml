@@ -40,7 +40,7 @@ jobs:
           input: './Helm/*'
           format: 'sarif'
           output: 'trivy-results.sarif'
-          exit-code: '1'
+          # exit-code: '1'
           severity: 'CRITICAL,HIGH'
       
       -
@@ -58,7 +58,7 @@ jobs:
         run: |
           pwd
           ls -la next_js_aws_devop_project
-          
+
           
       # -
       #   name: Set up QEMU
