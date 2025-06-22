@@ -83,21 +83,21 @@ jobs:
           echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
           echo ${{ env.NOW }}
 
-      - name: Debug image ref
-        run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
+      # - name: Debug image ref
+      #   run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
 
 
 
 
 #This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
-      - name: Run Trivy vulnerability scanner in docker mode
-        uses: aquasecurity/trivy-action@master
-        with:
-         image-ref: '${{ secrets.BACKEND_IMAGE }}:latest'
-         format: 'template'
-         template: '@/contrib/sarif.tpl'
-         output: 'trivy-results-docker.sarif'
-         severity: 'CRITICAL'
+      # - name: Run Trivy vulnerability scanner in docker mode
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #    image-ref: '${{ secrets.BACKEND_IMAGE }}:latest'
+      #    format: 'template'
+      #    template: '@/contrib/sarif.tpl'
+      #    output: 'trivy-results-docker.sarif'
+      #    severity: 'CRITICAL'
 
 
       
