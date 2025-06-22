@@ -59,6 +59,7 @@ jobs:
           pwd
           ls -la next_js_aws_devop_project
           
+          
       # -
       #   name: Set up QEMU
       #   uses: docker/setup-qemu-action@v3 
