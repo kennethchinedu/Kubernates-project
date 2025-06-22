@@ -35,4 +35,9 @@ docker_push:
 	docker tag $(IMAGE_DIRECTORY)/$(BACKEND_IMAGE) $(IMAGE_DIRECTORY)/$(BACKEND_IMAGE):$(IMAGE_TAG) && \
 	docker push $(IMAGE_DIRECTORY)/$(BACKEND_IMAGE):$(IMAGE_TAG) 
 
+#scanning images for vulnerabilities
+scan_backend_image:
+	trivy image --severity HIGH,CRITICAL $(IMAGE_DIRECTORY)/$(BACKEND_IMAGE):$(IMAGE_TAG)
 
+scan_frontend_image:
+	trivy image --severity HIGH,CRITICAL $(IMAGE_DIRECTORY)/$(FRONTEND_IMAGE):$(IMAGE_TAG)

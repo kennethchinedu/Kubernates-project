@@ -70,13 +70,45 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+          
+      #getting the current date for the image tag
+      - name: Set current date as env variable
+        run: | 
+          echo "NOW=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo ${NOW}
+      
+      #Scanning the image for vulnerabilities using trivy
+      #  Scanning backend image
+      - name: Scan backend image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'docker.io/${{secrets.BACKEND_IMAGE}}:${NOW}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          #exit-code: '1' # Fail the action if vulnerabilities are found
+          scan-type: 'image'  
 
+      #  Scanning frontend image
+      - name: Scan frontend image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'docker.io/${{secrets.FRONTEND_IMAGE}}:${NOW}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          #exit-code: '1' # Fail the action if vulnerabilities are found
+          scan-type: 'image'   
 
       - name: Pushing backend image to DockerHub
         run: |
           echo "Pushing backend image to DockerHub"
           # make docker_login
           make docker_push 
+     
+    
           
       
       # - name: Set up Docker Buildx for demo
