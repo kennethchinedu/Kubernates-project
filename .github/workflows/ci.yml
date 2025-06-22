@@ -15,6 +15,9 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+    #removing helm chart archives
+      - name: Clean up chart archives
+        run: rm -f *.tgz
 
       #Running security scans on the codebase (NIST, FEDRAMP, OWASP, etc.)
       - name: Scan codebase with trivy 
