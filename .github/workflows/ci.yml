@@ -86,7 +86,17 @@ jobs:
       # - name: Debug image ref
       #   run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
 
-
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: anandg112/trivy-action@feat/add-skip-dirs-option
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          ignore-unfixed: true
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results-fs.sarif'
+          severity: 'CRITICAL'
+          skip-dirs: "ignored-dir"
 
 
 #This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
