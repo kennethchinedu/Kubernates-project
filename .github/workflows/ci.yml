@@ -71,6 +71,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
           
+      - name: View docker images
+        run: |
+          echo "Listing Docker images"
+          docker images
+
+          
       #getting the current date for the image tag
       - name: Set current date as env variable
         run: | 
