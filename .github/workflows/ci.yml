@@ -84,7 +84,7 @@ jobs:
           echo ${{ env.NOW }}
 
       - name: Debug image ref
-        run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:${{ env.NOW }}"
+        run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
 
 
 
@@ -93,7 +93,7 @@ jobs:
       - name: Run Trivy vulnerability scanner in docker mode
         uses: aquasecurity/trivy-action@master
         with:
-         image-ref: '${{ secrets.BACKEND_IMAGE }}:${{ env.NOW }}'
+         image-ref: '${{ secrets.BACKEND_IMAGE }}:latest'
          format: 'template'
          template: '@/contrib/sarif.tpl'
          output: 'trivy-results-docker.sarif'
