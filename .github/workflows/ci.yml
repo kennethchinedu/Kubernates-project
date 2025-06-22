@@ -78,7 +78,7 @@ jobs:
           echo ${NOW}
 
 
-##-------------------------------
+
 #This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
       - name: Run Trivy vulnerability scanner in docker mode
         uses: aquasecurity/trivy-action@master
@@ -87,12 +87,13 @@ jobs:
          format: 'template'
          template: '@/contrib/sarif.tpl'
          output: 'trivy-results-docker.sarif'
-         severity: 'CRITICAL
+         severity: 'CRITICAL'
 
-##---------------
+
       
-      #Scanning the image for vulnerabilities using trivy
+     # Scanning the image for vulnerabilities using trivy
       #  Scanning backend image
+
       # - name: Scan backend image for vulnerabilities
       #   uses: aquasecurity/trivy-action@0.28.0
       #   with:
@@ -104,7 +105,7 @@ jobs:
       #     #exit-code: '1' # Fail the action if vulnerabilities are found
       #     scan-type: 'image'  
 
-      # #  Scanning frontend image
+      #  Scanning frontend image
       # - name: Scan frontend image for vulnerabilities
       #   uses: aquasecurity/trivy-action@0.28.0
       #   with:
