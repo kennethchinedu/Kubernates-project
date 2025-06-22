@@ -43,6 +43,17 @@ jobs:
           # exit-code: '1'
           severity: 'CRITICAL,HIGH'
 
+      - name: Setting up env 
+        run: |
+          echo "Setting up environment variables"
+          echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> $GITHUB_ENV
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          echo "PORT=${{ secrets.PORT}}" >> $GITHUB_ENV
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> $GITHUB_ENV
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> $GITHUB_ENV
+          echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> $GITHUB_ENV
+
       #Using makefile to run build and push images 
       - name: Building backend image
         run: |
