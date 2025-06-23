@@ -98,17 +98,45 @@ jobs:
       # - name: Debug image ref
       #   run: echo "Scanning ${{ secrets.BACKEND_IMAGE }}:latest"
 
-      - name: Run Trivy vulnerability scanner in fs mode
+      - name: Scan backend image for vulnerabilities
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'docker.io/anamskenneth/recipe_frontend:latest'
+          image-ref: 'anamskenneth/recipe_frontend:latest'
           scan-type: 'image'
-          format: 'table'
+          format: 'sarif'
           # exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-          output: 'table'
+          output: 'backend-image-scan.txt'
+
+
+      - name: Scan frontend image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'anamskenneth/recipe_frontend:latest'
+          scan-type: 'image'
+          format: 'sarif'
+          # exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'frontend-image-scan.txt'
+
+      - name: Upload backend image scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'backend-image-scan.txt'
+          category: 'image-backend'
+
+      - name: Upload frontend image scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'frontend-image-scan.txt'
+          category: 'image-frontend' 
+
+
+
 
 
 #This is the CI workflow for building and pushing Docker images, scanning for vulnerabilities, and deploying to Kubernetes. 
