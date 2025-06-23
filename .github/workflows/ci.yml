@@ -28,6 +28,7 @@ jobs:
           format: 'sarif'
           output:  'trivy-code-results.sarif' 
           severity: 'CRITICAL, HIGH'
+          skip-dirs: 'node_modules'
           # exit-code: '1' # Fail the action if vulnerabilities are found
       
 
@@ -109,6 +110,7 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           output: 'backend-image-scan.txt'
+          skip-dirs: 'node_modules'
 
 
       - name: Scan frontend image for vulnerabilities
@@ -122,6 +124,7 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           output: 'frontend-image-scan.txt'
+          skip-dirs: 'node_modules'
 
       - name: Upload backend image scan results
         uses: github/codeql-action/upload-sarif@v3
