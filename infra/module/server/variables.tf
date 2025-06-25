@@ -34,9 +34,21 @@ variable "region_main" {
   # default = "us-east-1"
 }
 
-variable "cidr" {
+variable "vpc-cidr" {
   type        = string
   # default = "172.16.0.0/16"
+}
+
+variable "private_subnet_cidr" {
+  type        = string
+  # default = ["
+  
+}
+
+variable "public_subnet_cidr" {
+  type        = string
+  # default = ["
+  
 }
 
 variable "availability_zone_a" {
