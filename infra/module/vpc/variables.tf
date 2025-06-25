@@ -28,24 +28,35 @@
 # }
 
 # defining locals
- variable "project_name" {
-  type        = string
-  default     = "my_project"
+#  variable "project_name" {
+#   type        = string
+#   default     = "my_project"
    
- }
+#  }
 
 variable "environment" {
   type        = string
   default     = "development"
 }
-
+ # defining locals for common tags
 locals {
   common_tags = {
-    Project     = var.project_name
+    Project     = "Kubernetes Project"
     Environment = var.environment
     Owner       = "Cloud Team"
   }
 }
+
+
+#Defining locals for VPC and subnets
+locals {
+  vpc_cidr = var.vpc_cidr
+  private_subnet_cidr = var.private_subnet_cidr
+  public_subnet_cidr = var.public_subnet_cidr   
+}  
+
+
+
 
 resource "aws_s3_bucket" "logs" {
   bucket = "${var.project_name}-logs"
