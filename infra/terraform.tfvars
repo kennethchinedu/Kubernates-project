@@ -13,4 +13,5 @@ instance_type = "t3.large"
 # key_path = "/path/to/your/key.pub"
 
 ## variables
+#variables are for transferring data from the terraform.tfvars file to the variables.tf file
 
