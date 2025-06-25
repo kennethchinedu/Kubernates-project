@@ -7,18 +7,23 @@ resource "aws_vpc" "myvpc" {
   cidr_block = local.vpc_cidr
   
 
-  tags = {
-    Name = "kube-vpc"
-  }
+  tags  = local.common_tags
+  
 }
 
 #This subnet automatically assigns public ip to resources  launched into it 
 resource "aws_subnet" "subnet1" {
   vpc_id = aws_vpc.myvpc.id  
-  cidr_block = "172.16.0.0/24"
-  availability_zone = var.availability_zone_a
+  cidr_block = local.private_subnet_cidr
+  availability_zone =local.availability_zone_a
   map_public_ip_on_launch = true
+  
+   
+  tags = merge(
+  local.common_tags,
+  { Name = "private-subnet" } )
 }
+
 
 
 #This subnet is private

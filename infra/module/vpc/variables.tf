@@ -38,6 +38,9 @@ variable "environment" {
   type        = string
   default     = "development"
 }
+
+# =========== LOCALS ===========
+
  # defining locals for common tags
 locals {
   common_tags = {
@@ -46,14 +49,18 @@ locals {
     Owner       = "Cloud Team"
   }
 }
+ 
 
 
-#Defining locals for VPC and subnets
+#Defining LOCALS for VPC and subnets
 locals {
   vpc_cidr = var.vpc_cidr
   private_subnet_cidr = var.private_subnet_cidr
   public_subnet_cidr = var.public_subnet_cidr   
+  availability_zone_a = var.availability_zone_a
+  availability_zone_b = var.availability_zone_b
 }  
+
 
 
 
