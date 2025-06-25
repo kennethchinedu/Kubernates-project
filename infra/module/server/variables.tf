@@ -27,14 +27,42 @@
   
 # }
 
+# defining locals
+ variable "project_name" {
+  type        = string
+  default     = "my_project"
+   
+ }
 
+variable "environment" {
+  type        = string
+  default     = "development"
+}
+
+locals {
+  common_tags = {
+    Project     = var.project_name
+    Environment = var.environment
+    Owner       = "Cloud Team"
+  }
+}
+
+resource "aws_s3_bucket" "logs" {
+  bucket = "${var.project_name}-logs"
+  tags   = local.common_tags
+}
+
+
+locals {
+  vpc_cidr = var.vpc_cidr 
+}
 
 variable "region_main" {
   type        = string
   # default = "us-east-1"
 }
 
-variable "vpc-cidr" {
+variable "vpc_cidr" {
   type        = string
   # default = "172.16.0.0/16"
 }
