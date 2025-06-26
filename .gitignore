@@ -4,7 +4,7 @@ values.yaml
 terraform.tfvars
 
 .terraform.lock.hcl
-terraform.tfstate
+terraform.tfstate*
 
 .terraform/
 infra/terraform.tfstate.backup

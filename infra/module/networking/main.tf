@@ -14,7 +14,7 @@ resource "aws_vpc" "myvpc" {
 #This subnet automatically assigns public ip to resources  launched into it 
 resource "aws_subnet" "public_subnet" {
   vpc_id = aws_vpc.myvpc.id  
-  cidr_block = local.private_subnet_cidr
+  cidr_block = local.public_subnet_cidr
   availability_zone =var.availability_zone_a
   map_public_ip_on_launch = true
   
@@ -32,7 +32,7 @@ resource "aws_subnet" "private_subnet" {
   vpc_id = aws_vpc.myvpc.id  
   cidr_block = local.private_subnet_cidr
   availability_zone = var.availability_zone_b
-  map_public_ip_on_launch = true
+
 
   tags = merge(
   local.common_tags,
@@ -49,7 +49,7 @@ resource "aws_internet_gateway" "i-gateway" {
   local.common_tags,
   { Name = "k8s-igw" } )
   
-}
+}  
 
 # #Route table for our subnets using the internet gateway
 resource "aws_route_table" "public_subnet_rt" {

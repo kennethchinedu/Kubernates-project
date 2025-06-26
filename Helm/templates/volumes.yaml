@@ -30,4 +30,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.pv.size }}
-  volumeName: {{ include "recipe-app.fullname" . }}-pv
+  volumeName: {{ include "recipe-app.fullname" . }}-pv 
