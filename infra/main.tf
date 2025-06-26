@@ -1,39 +1,42 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.region_main
 }
 
-module "app-deployment" {
-  source              = "./module/server"
+module "networking" {
+  source              = "./module/networking"
   region_main         = var.region_main
-  cidr                = var.cidr
+  vpc_cidr                = var.vpc_cidr
   availability_zone_a = var.availability_zone_a
   availability_zone_b = var.availability_zone_b
-  ami                 = var.ami
-  instance_type       = var.instance_type
+  public_subnet_cidr = var.public_subnet_cidr
+  private_subnet_cidr = var.private_subnet_cidr
+  instance_type = var.instance_type
+  ami = var.ami
+ 
 }
 
 
 # Use module outputs instead of direct resource references
-output "ec2_public_ip" {
-  value = module.app-deployment.ec2_public_ip
-}
-
-# output "ec2_private_ip" {
-#   value = module.app-deployment.ec2_private_ip
+# output "ec2_public_ip" {
+#   value = module.app-deployment.ec2_public_ip
 # }
 
-output "dns_name" {
-  description = "The DNS name of the load balancer"
-  value       = module.app-deployment.dns_name
-}
+# # output "ec2_private_ip" {
+# #   value = module.app-deployment.ec2_private_ip
+# # }
 
-# output "ssh_private_key" {
-#   description = "private key for seriver"
-#   value       = module.app-deployment.ssh_private_key
-#   sensitive   = true
+# output "dns_name" {
+#   description = "The DNS name of the load balancer"
+#   value       = module.app-deployment.dns_name
 # }
 
-output "user_name" {
-  description = "user name for server"
-  value       = module.app-deployment.user_name
-}
+# # output "ssh_private_key" {
+# #   description = "private key for seriver"
+# #   value       = module.app-deployment.ssh_private_key
+# #   sensitive   = true
+# # }
+
+# output "user_name" {
+#   description = "user name for server"
+#   value       = module.app-deployment.user_name
+# }

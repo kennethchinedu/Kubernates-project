@@ -65,15 +65,6 @@ locals {
 
 
 
-resource "aws_s3_bucket" "logs" {
-  bucket = "${var.project_name}-logs"
-  tags   = local.common_tags
-}
-
-
-locals {
-  vpc_cidr = var.vpc_cidr 
-}
 
 variable "region_main" {
   type        = string

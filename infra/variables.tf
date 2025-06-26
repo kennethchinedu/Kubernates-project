@@ -1,14 +1,31 @@
 
+variable "environment" {
+  type        = string
+  default     = "development"
+}
+
 variable "region_main" {
   type = string
   # default = "us-east-1"
 }
 
-variable "cidr" {
-  type = string
+variable "vpc_cidr" {
+  type        = string
   # default = "172.16.0.0/16"
 }
 
+
+variable "private_subnet_cidr" {
+  type        = string
+  # default = ["
+  
+}
+
+variable "public_subnet_cidr" {
+  type        = string
+  # default = ["
+  
+}
 variable "availability_zone_a" {
   type = string
   # default = "us-east-1a" 
@@ -27,9 +44,4 @@ variable "ami" {
 variable "instance_type" {
   type = string
   # default = "t2.micro"
-}
-
-variable "environment" {
-  type        = string
-  default     = "development"
 }

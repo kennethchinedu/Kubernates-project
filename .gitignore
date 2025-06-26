@@ -1,1 +1,15 @@
-Helm/values.yaml
+values.yaml
+*tfstate
+*.tfstate.backup
+terraform.tfvars
+
+.terraform.lock.hcl
+terraform.tfstate
+
+.terraform/
+infra/terraform.tfstate.backup
+
+deployer_key 
+deployer_key.pub
+.tfstate*
+.env

@@ -4,7 +4,7 @@ provider "aws" {
 
 #creating vpc
 resource "aws_vpc" "myvpc" {
-  cidr_block = local.vpc_cidr
+  cidr_block = var.vpc_cidr
   
 
   tags  = local.common_tags
@@ -67,18 +67,23 @@ resource "aws_route_table" "public_subnet_rt" {
 # Associating public route table with our public subnet
 resource "aws_route_table_association" "rt_association1" {  
   subnet_id      = aws_subnet.public_subnet.id   
-  route_table_id = aws_route_table.rt.id
+  route_table_id = aws_route_table.public_subnet_rt.id
 }
 
 
 #Elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
-  vpc = true
+
+
+  tags = merge(
+    local.common_tags,
+    { Name = "nat-eip" }
+  )
 }
 
 
 # NAT Gateway for private subnet to access the internet
-resource "aws_nat_gateway" "n-gateway" {
+resource "aws_nat_gateway" "n_gateway" {
   subnet_id     = aws_subnet.public_subnet.id
   allocation_id = aws_eip.nat_eip.id  
 
@@ -112,58 +117,58 @@ resource "aws_route_table_association" "rt_association2" {
 ############################## LOAD BALANCERS #################################
 
 
-#creating load balancer (removed second ec2)
-resource "aws_lb" "lb" {
-  name = "recipelb"
-  internal = false 
-  load_balancer_type = "application" 
-  security_groups = [aws_security_group.sg.id]
-  subnets = [ aws_subnet.subnet1.id, aws_subnet.subnet2.id ]
+# #creating load balancer (removed second ec2)
+# resource "aws_lb" "lb" {
+#   name = "recipelb"
+#   internal = false 
+#   load_balancer_type = "application" 
+#   security_groups = [aws_security_group.sg.id]
+#   subnets = [ aws_subnet.subnet1.id, aws_subnet.subnet2.id ]
   
-  tags = {
-    name = "recipe-load-balancer"
-  }
-}
-
-#creating target groups
-resource "aws_lb_target_group" "tg" {
-  name = "mytg"  # no underscores
-  port = 80  
-  protocol = "HTTP"
-  vpc_id = aws_vpc.myvpc.id  
-
-  # Including health check
-  health_check {
-    path = "/"
-    port = "traffic-port"
-  }
-}
-
-#Target group attachement to ec2
-resource "aws_lb_target_group_attachment" "attach_server1" {
-  target_group_arn = aws_lb_target_group.tg.arn 
-  target_id = aws_instance.server1.id 
-  port = 80
-}
-
-# resource "aws_lb_target_group_attachment" "attach_server2" {
-#   target_group_arn = aws_lb_target_group.tg.arn 
-#   target_id = aws_instance.server2.id 
-#   port = 5173
+#   tags = {
+#     name = "recipe-load-balancer"
+#   }
 # }
 
-#creating load balancer lister
-resource "aws_lb_listener" "lb_listener" {
-  load_balancer_arn = aws_lb.lb.arn  
-  port = 80 
-  protocol = "HTTP"
+# #creating target groups
+# resource "aws_lb_target_group" "tg" {
+#   name = "mytg"  # no underscores
+#   port = 80  
+#   protocol = "HTTP"
+#   vpc_id = aws_vpc.myvpc.id  
 
-  default_action {
-    target_group_arn = aws_lb_target_group.tg.arn 
-    type = "forward"
-  }
-}
+#   # Including health check
+#   health_check {
+#     path = "/"
+#     port = "traffic-port"
+#   }
+# }
 
-output "loadbancerip" {
-  value = aws_lb.lb.dns_name
-}
+# #Target group attachement to ec2
+# resource "aws_lb_target_group_attachment" "attach_server1" {
+#   target_group_arn = aws_lb_target_group.tg.arn 
+#   target_id = aws_instance.server1.id 
+#   port = 80
+# }
+
+# # resource "aws_lb_target_group_attachment" "attach_server2" {
+# #   target_group_arn = aws_lb_target_group.tg.arn 
+# #   target_id = aws_instance.server2.id 
+# #   port = 5173
+# # }
+
+# #creating load balancer lister
+# resource "aws_lb_listener" "lb_listener" {
+#   load_balancer_arn = aws_lb.lb.arn  
+#   port = 80 
+#   protocol = "HTTP"
+
+#   default_action {
+#     target_group_arn = aws_lb_target_group.tg.arn 
+#     type = "forward"
+#   }
+# }
+
+# output "loadbancerip" {
+#   value = aws_lb.lb.dns_name
+# }
