@@ -16,29 +16,29 @@
 # }
 
 
-# module "eks" {
-#   source  = "terraform-aws-modules/eks/aws"
-#   version = "~> 20.31"
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.37"
 
-#   cluster_name    = local.common_tags
-#   cluster_version = "1.31"
+  cluster_name    = local.common_tags
+  cluster_version = "1.31"
 
-#   # Optional
-#   cluster_endpoint_public_access = true
+  # Optional
+  cluster_endpoint_public_access = true
 
-#   # Optional: Adds the current caller identity as an administrator via cluster access entry
-#   enable_cluster_creator_admin_permissions = true
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
 
-#   cluster_compute_config = {
-#     enabled    = true
-#     node_pools = ["general-purpose"]
-#   }
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
 
-#   vpc_id     = module.networking.myvpc.id
-#   subnet_ids = ["module.networking.private_subnet.id", "module.networking.public_subnet.id"]
+  vpc_id     = module.networking.myvpc.id
+  subnet_ids = ["module.networking.private_subnet.id", "module.networking.public_subnet.id"]
 
-#   tags = merge(
-#   local.common_tags,
-#   { Name = "k8s" } )
-# }
+  tags = merge(
+  local.common_tags,
+  { Name = "k8s" } )
+}
 

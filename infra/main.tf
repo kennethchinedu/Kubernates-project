@@ -12,6 +12,22 @@ module "networking" {
   private_subnet_cidr = var.private_subnet_cidr
   instance_type = var.instance_type
   ami = var.ami
+  environment =  var.environment
+ 
+}
+
+
+module "eks" {
+  source              = "./module/eks"
+  region_main         = var.region_main
+  vpc_cidr                = var.vpc_cidr
+  availability_zone_a = var.availability_zone_a
+  availability_zone_b = var.availability_zone_b
+  public_subnet_cidr = var.public_subnet_cidr
+  private_subnet_cidr = var.private_subnet_cidr
+  instance_type = var.instance_type
+  ami = var.ami
+  environment =  var.environment
  
 }
 
