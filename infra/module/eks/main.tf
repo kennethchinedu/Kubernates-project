@@ -20,7 +20,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.37"
 
-  cluster_name    = local.common_tags
+  cluster_name    = "ek8s-cluster"
   cluster_version = "1.31"
 
   # Optional
@@ -34,8 +34,8 @@ module "eks" {
     node_pools = ["general-purpose"]
   }
 
-  vpc_id     = module.networking.myvpc.id
-  subnet_ids = ["module.networking.private_subnet.id", "module.networking.public_subnet.id"]
+  vpc_id     = var.vpc_id
+  subnet_ids = ["var.private_subnet_ids"]
 
   tags = merge(
   local.common_tags,
