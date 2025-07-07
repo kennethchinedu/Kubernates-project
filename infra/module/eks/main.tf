@@ -133,6 +133,7 @@ resource "aws_eks_node_group" "ek8s_node_group" {
 }
 
 
+
 # IAM role for EKS Node Group
 resource "aws_iam_role" "node_group_iam_role" {
   name = "node_group_iam_role"
