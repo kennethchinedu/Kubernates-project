@@ -106,7 +106,7 @@ resource "aws_eks_node_group" "ek8s_node_group" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "my_cluster_node_group"
   node_role_arn   = aws_iam_role.node_group_iam_role.arn
-  subnet_ids      = [var.private_subnet_ids, var.public_subnet_ids]
+  subnet_ids      = [ var.public_subnet_ids]
 
   scaling_config {
     desired_size = 1
@@ -130,7 +130,7 @@ resource "aws_eks_node_group" "ek8s_node_group" {
     aws_iam_role_policy_attachment.node-group-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node-group-AmazonEC2ContainerRegistryReadOnly,
   ]
-}
+} 
 
 
 
