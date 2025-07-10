@@ -42,6 +42,7 @@ module "security" {
  
 }
 
+
 # Use module outputs instead of direct resource references
 # output "ec2_public_ip" {
 #   value = module.networking.vpc_id
