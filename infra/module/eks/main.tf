@@ -119,7 +119,8 @@ resource "aws_eks_node_group" "ek8s_node_group" {
   }
 
   remote_access {
-    
+    source_security_group_ids =[ var.security_group_id]
+    ec2_ssh_key = "kube-demo"
   }
 
   instance_types = [var.instance_type]

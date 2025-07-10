@@ -26,14 +26,26 @@ module "eks" {
   instance_type = var.instance_type
   ami = var.ami
   environment =  var.environment
+  # ssh_key_name = var.ssh_key_name 
+  security_group_id = module.security.security_group_id
  
 }
 
 
-# Use module outputs instead of direct resource references
-output "ec2_public_ip" {
-  value = module.networking.vpc_id
+module "security" {
+  source              = "./module/security"
+  region_main         = var.region_main
+  vpc_id                = module.networking.vpc_id
+  public_subnet_ids = module.networking.public_subnet_ids
+  private_subnet_ids = module.networking.private_subnet_ids
+  environment =  var.environment
+ 
 }
+
+# Use module outputs instead of direct resource references
+# output "ec2_public_ip" {
+#   value = module.networking.vpc_id
+# }
 
 # # output "ec2_private_ip" {
 # #   value = module.app-deployment.ec2_private_ip

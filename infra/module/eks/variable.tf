@@ -48,19 +48,10 @@ variable "private_subnet_ids" {
 
 variable "public_subnet_ids" {
   type        = string
-  # default = ["
+
   
 }
 
-# variable "availability_zone_a" {
-#   type        = string
-#   # default = "us-east-1a" 
-# }
-
-# variable "availability_zone_b" {
-#   type        = string
-#   # default = "us-east-1b" 
-# }
 
 variable "ami" {
   type        = string
@@ -71,3 +62,13 @@ variable "instance_type" {
   type        = string
   # default = "t2.micro"
 }
+
+
+
+
+variable "security_group_id" {
+  type        = string
+  # description = "The security group ID for the EKS workder nodes"
+  
+} 
+
