@@ -99,6 +99,25 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 
 
 
+
+# Creating a launch template for node group
+
+resource "aws_launch_template" "eks_node_launch_template" {
+  name_prefix   = "eks-node-launch-template-"
+  image_id      = var.ami
+  instance_type = var.instance_type
+  key_name      = "kube-demo" 
+
+  vpc_security_group_ids = [var.security_group_id]
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "eks-node"
+    }
+  }
+}
+
 #-------------------------------------------
 ## Creating node group for EKS cluster
 
@@ -106,7 +125,7 @@ resource "aws_eks_node_group" "ek8s_node_group" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "my_cluster_node_group"
   node_role_arn   = aws_iam_role.node_group_iam_role.arn
-  subnet_ids      = [ var.public_subnet_ids]
+  subnet_ids      = [var.public_subnet_ids]
 
   scaling_config {
     desired_size = 1
@@ -114,24 +133,29 @@ resource "aws_eks_node_group" "ek8s_node_group" {
     min_size     = 1
   }
 
+  launch_template {
+    id      = aws_launch_template.eks_node_launch_template.id
+    version = "$Latest"
+  }
+
   update_config {
     max_unavailable = 2
   }
 
-  remote_access {
-    source_security_group_ids =[ var.security_group_id]
-    ec2_ssh_key = "kube-demo"
-  }
+  # remote_access {
+  #   ec2_ssh_key               = "kube-demo"
+  #   source_security_group_ids = [var.security_group_id]
+  # }
 
-  instance_types = [var.instance_type]
+  # instance_types = [var.instance_type]
 
-  # Ensures that IAM Role permissions are created before and deleted after EKS Node Group handling.
   depends_on = [
     aws_iam_role_policy_attachment.node-group-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node-group-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node-group-AmazonEC2ContainerRegistryReadOnly,
   ]
-} 
+}
+
 
 
 
