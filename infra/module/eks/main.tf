@@ -146,12 +146,6 @@ resource "aws_eks_node_group" "ek8s_node_group" {
     max_unavailable = 2
   }
 
-  # remote_access {
-  #   ec2_ssh_key               = "kube-demo"
-  #   source_security_group_ids = [var.security_group_id]
-  # }
-
-  # instance_types = [var.instance_type]
 
   depends_on = [
     aws_iam_role_policy_attachment.node-group-AmazonEKSWorkerNodePolicy,
