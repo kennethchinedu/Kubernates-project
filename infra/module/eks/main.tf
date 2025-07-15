@@ -62,11 +62,13 @@ resource "aws_eks_cluster" "eks" {
       var.public_subnet_ids,
       
     ]
-  }
+  } 
+
 
   # Ensure that IAM Role permissions are created before and deleted after the cluster
   depends_on = [
-    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
+    aws_iam_role.cluster,
+    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy
   ]
 }
 
@@ -90,6 +92,8 @@ resource "aws_iam_role" "cluster" {
       },
     ]
   })
+
+  
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
