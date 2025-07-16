@@ -76,23 +76,27 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 resource "aws_eks_cluster" "eks" {
   name = "my_cluster"
 
-  access_config {
-    authentication_mode = "API"
-  }
-
   role_arn = aws_iam_role.cluster.arn
   version  = "1.32"
 
+  access_config {
+    authentication_mode = "API"
+    bootstrap_cluster_creator_admin_permissions = true
+  }
+
+  bootstrap_self_managed_addons = true
+
   vpc_config {
+    endpoint_private_access = true
+    endpoint_public_access  = true
     subnet_ids = [
       var.private_subnet_ids,
       var.public_subnet_ids,
       
-    ]
+    ] 
   } 
 
-
-  # Ensure that IAM Role permissions are created before and deleted after the cluster
+  # Ensuring that IAM Role permissions are created before and deleted after the cluster
   depends_on = [
     aws_iam_role.cluster,
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy
@@ -122,6 +126,41 @@ resource "aws_launch_template" "eks_node_launch_template" {
     }
   }
 }
+
+# IAM role for EKS node group
+# IAM role for EKS Node Group
+resource "aws_iam_role" "node_group_iam_role" {
+  name = "node_group_iam_role"
+
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
+}
+
+
+# Attaching policies to the EKS Node Group IAM role
+resource "aws_iam_role_policy_attachment" "node-group-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.node_group_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "node-group-AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.node_group_iam_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "node-group-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.node_group_iam_role.name
+}
+
 
 #-------------------------------------------
 ## Creating node group for EKS cluster
@@ -159,33 +198,5 @@ resource "aws_eks_node_group" "ek8s_node_group" {
 
 
 
-# IAM role for EKS Node Group
-resource "aws_iam_role" "node_group_iam_role" {
-  name = "node_group_iam_role"
 
-  assume_role_policy = jsonencode({
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-    Version = "2012-10-17"
-  })
-}
 
-resource "aws_iam_role_policy_attachment" "node-group-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.node_group_iam_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "node-group-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.node_group_iam_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "node-group-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.node_group_iam_role.name
-}
