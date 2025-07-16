@@ -31,6 +31,15 @@ resource "aws_security_group" "sg" {
   }
 
 
+
+  ingress {
+    description = "Http Acces"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 #Allow all traffic
   egress {
     description = "Allow all traffic"

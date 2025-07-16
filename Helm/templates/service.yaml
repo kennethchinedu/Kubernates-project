@@ -9,9 +9,12 @@ spec:
    {{- include "frontend.selectorLabels" . | nindent 4 }}
   ports:  
     - port: 80 
+      name: http
       targetPort: {{ .Values.service.frontendPort }} 
       protocol: TCP 
-  type: NodePort
+      # nodePort: 32160
+  type: LoadBalancer
+
   
   
 
