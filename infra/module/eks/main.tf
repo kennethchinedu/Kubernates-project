@@ -308,7 +308,7 @@ update_config {
 # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
 # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
 depends_on = [
-    aws_iam_role.demo-eks-ng-role,
+    
     aws_iam_role_policy_attachment.eks-demo-ng-WorkerNodePolicy,
     aws_iam_role_policy_attachment.eks-demo-ng-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.eks-demo-ng-ContainerRegistryReadOnly,
