@@ -44,6 +44,33 @@
 #   { Name = "k8s" } )
 # }
 
+# Iam role for EKS cluster
+# This role is assumed by the EKS service to manage the cluster.
+resource "aws_iam_role" "cluster" {
+  name = "eks-cluster-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+
+#Attaching the AmazonEKSClusterPolicy to the EKS cluster IAM role
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.cluster.name
+}
 
 
 resource "aws_eks_cluster" "eks" {
@@ -73,33 +100,7 @@ resource "aws_eks_cluster" "eks" {
 }
 
 
-# Iam role for EKS cluster
-# This role is assumed by the EKS service to manage the cluster.
-resource "aws_iam_role" "cluster" {
-  name = "eks-cluster-role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "sts:AssumeRole",
-          "sts:TagSession"
-        ]
-        Effect = "Allow"
-        Principal = {
-          Service = "eks.amazonaws.com"
-        }
-      },
-    ]
-  })
 
-  
-}
-
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.cluster.name
-}
 
 
 
@@ -148,6 +149,7 @@ resource "aws_eks_node_group" "ek8s_node_group" {
 
 
   depends_on = [
+    aws_iam_role.node_group_iam_role,
     aws_iam_role_policy_attachment.node-group-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node-group-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node-group-AmazonEC2ContainerRegistryReadOnly,
