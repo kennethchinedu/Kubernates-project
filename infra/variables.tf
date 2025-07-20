@@ -1,7 +1,7 @@
 
 variable "environment" {
-  type        = string
-  default     = "development"
+  type    = string
+  default = "development"
 }
 
 variable "region_main" {
@@ -10,21 +10,21 @@ variable "region_main" {
 }
 
 variable "vpc_cidr" {
-  type        = string
+  type = string
   # default = "172.16.0.0/16"
 }
 
 
 variable "private_subnet_cidr" {
-  type        = string
+  type = string
   # default = ["
-  
+
 }
 
 variable "public_subnet_cidr" {
-  type        = string
+  type = string
   # default = ["
-  
+
 }
 variable "availability_zone_a" {
   type = string

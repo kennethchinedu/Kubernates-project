@@ -1,11 +1,11 @@
 
 variable "environment" {
-  type        = string
+  type = string
 }
 
 # =========== LOCALS ===========
 
- # defining locals for common tags
+# defining locals for common tags
 locals {
   common_tags = {
     Project     = "Kubernetes Project"
@@ -13,7 +13,7 @@ locals {
     Owner       = "Cloud Team"
   }
 }
- 
+
 
 
 #Defining LOCALS for VPC and subnets
@@ -31,35 +31,35 @@ locals {
 
 
 variable "region_main" {
-  type        = string
+  type = string
   # default = "us-east-1"
 }
 
 variable "vpc_id" {
-  type        = string
+  type = string
 
 }
 
 variable "private_subnet_ids" {
-  type        = string
-  
-  
+  type = string
+
+
 }
 
 variable "public_subnet_ids" {
-  type        = string
+  type = string
 
-  
+
 }
 
 
 variable "ami" {
-  type        = string
+  type = string
   #  description = "ami-0a0e5d9c7acc336f1"
 }
 
 variable "instance_type" {
-  type        = string
+  type = string
   # default = "t2.micro"
 }
 
@@ -67,8 +67,8 @@ variable "instance_type" {
 
 
 variable "security_group_id" {
-  type        = string
+  type = string
   # description = "The security group ID for the EKS workder nodes"
-  
-} 
+
+}
 

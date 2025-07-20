@@ -1,7 +1,8 @@
+#Frontend Service and Ingress Configuration
 apiVersion: v1 
 kind: Service
 metadata:
-  name: {{ include "recipe-app.fullname" .}}
+  name: {{ include "recipe-app.frontendContainer" .}}
   labels:
     {{- include "recipe-app.labels" . | nindent 4 }}
 spec:
@@ -10,12 +11,31 @@ spec:
   ports:  
     - port: 80 
       name: http
-      targetPort: {{ .Values.service.frontendPort }} 
+      targetPort: 5173
       protocol: TCP 
-      # nodePort: 32160
   type: LoadBalancer
 
   
+---
+#Backend Service Configuration
+apiVersion: v1 
+kind: Service
+metadata:
+  name: {{ include "recipe-app.backendContainer" .}}
+  labels:
+    {{- include "recipe-app.labels" . | nindent 4 }}
+spec:
+  selector:
+   {{- include "backend.selectorLabels" . | nindent 4 }}
+  ports:  
+    - port: {{ .Values.service.backendPort }} 
+      name: http
+      targetPort: {{ .Values.service.backendPort }} 
+      protocol: TCP 
+      nodePort: 32160
+  type: NodePort
+  
+
   
 
 --- 

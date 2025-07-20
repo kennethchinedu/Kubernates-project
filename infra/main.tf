@@ -5,41 +5,42 @@ provider "aws" {
 module "networking" {
   source              = "./module/networking"
   region_main         = var.region_main
-  vpc_cidr                = var.vpc_cidr
+  vpc_cidr            = var.vpc_cidr
   availability_zone_a = var.availability_zone_a
   availability_zone_b = var.availability_zone_b
-  public_subnet_cidr = var.public_subnet_cidr
+  public_subnet_cidr  = var.public_subnet_cidr
   private_subnet_cidr = var.private_subnet_cidr
-  instance_type = var.instance_type
-  ami = var.ami
-  environment =  var.environment
- 
+  instance_type       = var.instance_type
+  ami                 = var.ami
+  environment         = var.environment
+
 }
 
 
 module "eks" {
-  source              = "./module/eks"
-  region_main         = var.region_main
-  vpc_id                = module.networking.vpc_id
-  public_subnet_ids = module.networking.public_subnet_ids
+  source             = "./module/eks"
+  region_main        = var.region_main
+  vpc_id             = module.networking.vpc_id
+  public_subnet_ids  = module.networking.public_subnet_ids
   private_subnet_ids = module.networking.private_subnet_ids
-  instance_type = var.instance_type
-  ami = var.ami
-  environment =  var.environment
+  instance_type      = var.instance_type
+  ami                = var.ami
+  environment        = var.environment
   # ssh_key_name = var.ssh_key_name 
   security_group_id = module.security.security_group_id
- 
+
 }
 
 
 module "security" {
-  source              = "./module/security"
-  region_main         = var.region_main
-  vpc_id                = module.networking.vpc_id
-  public_subnet_ids = module.networking.public_subnet_ids
+  source             = "./module/security"
+  region_main        = var.region_main
+  vpc_id             = module.networking.vpc_id
+  public_subnet_ids  = module.networking.public_subnet_ids
   private_subnet_ids = module.networking.private_subnet_ids
-  environment =  var.environment
- 
+  environment        = var.environment
+
+
 }
 
 

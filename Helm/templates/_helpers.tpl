@@ -14,7 +14,7 @@ Expand the name of the chart.
 
 #Defining backend and frontend app names
 {{- define "recipe-app.backendContainer" -}}
-{{- printf "%s-%s" .Chart.Name "backend-app" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "backend-app" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "recipe-app.frontendContainer" -}}
