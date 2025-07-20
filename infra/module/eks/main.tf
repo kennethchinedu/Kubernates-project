@@ -95,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "eks-ng-ContainerRegistryReadOnly" {
 resource "aws_launch_template" "eks_node_group_lt" {
   name_prefix   = "eks-node-"
   # image_id      = "ami-xxxxxxxxxxxx" # EKS optimized AMI
-  instance_type = "t2.micro"
+  instance_type = "t3.medium"
 
   vpc_security_group_ids = [
     var.security_group_id
