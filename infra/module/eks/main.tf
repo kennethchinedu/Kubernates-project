@@ -95,13 +95,13 @@ resource "aws_iam_role_policy_attachment" "eks-ng-ContainerRegistryReadOnly" {
 resource "aws_launch_template" "eks_node_group_lt" {
   name_prefix   = "eks-node-"
   # image_id      = "ami-xxxxxxxxxxxx" # EKS optimized AMI
-  instance_type = "t3.medium"
+  instance_type = "t2.micro"
 
   vpc_security_group_ids = [
     var.security_group_id
   ]
 
-
+  key_name = "kube-demo" 
 
   lifecycle {
     create_before_destroy = true
@@ -130,10 +130,10 @@ resource "aws_eks_node_group" "eks-node-group" {
     max_unavailable = 1
   }
 
-  remote_access {
-    source_security_group_ids = [var.security_group_id]
-    ec2_ssh_key               = "kube-demo" # 
-  }
+  # remote_access {
+  #   source_security_group_ids = [var.security_group_id]
+    
+  # }
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [
