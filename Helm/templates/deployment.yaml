@@ -55,9 +55,7 @@ spec:
       {{- end }}
         
         
-      
-
-
+    
 ---
 # Setting up the frontend container
 apiVersion: apps/v1
