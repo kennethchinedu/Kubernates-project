@@ -10,7 +10,7 @@ spec:
    {{- include "frontend.selectorLabels" . | nindent 4 }}
   ports:  
     - port: 80 
-      name: http
+      name: httpterr
       targetPort: 5173
       protocol: TCP 
   type: LoadBalancer
