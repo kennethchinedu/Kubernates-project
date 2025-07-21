@@ -63,9 +63,6 @@ variable "instance_type" {
   # default = "t2.micro"
 }
 
-
-
-
 variable "security_group_id" {
   type = string
   # description = "The security group ID for the EKS workder nodes"
