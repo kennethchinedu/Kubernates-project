@@ -13,6 +13,10 @@ module "networking" {
   instance_type       = var.instance_type
   ami                 = var.ami
   environment         = var.environment
+  eks_node_group_name = module.eks.eks_node_group_name
+  eks_node_group_id   = module.eks.eks_node_group_id
+  security_group_id   = module.security.security_group_id
+  
 
 }
 

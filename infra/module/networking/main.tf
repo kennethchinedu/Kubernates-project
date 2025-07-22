@@ -115,61 +115,83 @@ resource "aws_route_table_association" "rt_association2" {
 
 
 ############################## LOAD BALANCERS #################################
-############################## LOAD BALANCERS #################################
 
 
-# #creating load balancer (removed second ec2)
-# resource "aws_lb" "lb" {
-#   name = "recipelb"
-#   internal = false 
-#   load_balancer_type = "application" 
-#   security_groups = [aws_security_group.sg.id]
-#   subnets = [ aws_subnet.subnet1.id, aws_subnet.subnet2.id ]
+
+# #Data for eks node group
+data "aws_instances" "eks_nodes" {
+  filter {
+    name   = "tag:eks:eks-node-group"
+    values = [var.eks_node_group_id]
+  }
+
+  filter {
+    name   = "instance-state-name"
+    values = ["running"]
+  }
+
+
+  depends_on = [var.eks_node_group_name]
   
-#   tags = {
-#     name = "recipe-load-balancer"
-#   }
-# }
+}
 
-# #creating target groups
-# resource "aws_lb_target_group" "tg" {
-#   name = "mytg"  # no underscores
-#   port = 80  
-#   protocol = "HTTP"
-#   vpc_id = aws_vpc.myvpc.id  
 
-#   # Including health check
-#   health_check {
-#     path = "/"
-#     port = "traffic-port"
-#   }
-# }
+#Load balancer
+resource "aws_lb" "frontend_lb" {
+  name               = "frontend-app-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [var.security_group_id]
+  subnets            = aws_subnet.public_subnet[*].id
+} 
 
-# #Target group attachement to ec2
-# resource "aws_lb_target_group_attachment" "attach_server1" {
-#   target_group_arn = aws_lb_target_group.tg.arn 
-#   target_id = aws_instance.server1.id 
-#   port = 80
-# }
+# #creating target group for load balancer
+resource "aws_lb_target_group" "frontend_tg" {
+  name     = "frontend-target-group"
+  port     = 31080
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.myvpc.id
 
-# # resource "aws_lb_target_group_attachment" "attach_server2" {
-# #   target_group_arn = aws_lb_target_group.tg.arn 
-# #   target_id = aws_instance.server2.id 
-# #   port = 5173
-# # }
+  health_check {
+    enabled             = true
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+  }
+}
 
-# #creating load balancer lister
-# resource "aws_lb_listener" "lb_listener" {
-#   load_balancer_arn = aws_lb.lb.arn  
-#   port = 80 
-#   protocol = "HTTP"
+#getting the auto scaling group from eks node group and attaching to alb
+data "aws_autoscaling_groups" "eks_node_asgs" {
+  filter {
+    name   = "tag:ekseks-node-group"
+    values = [var.eks_node_group_name]  # Or the string directly
+  }
+}
 
-#   default_action {
-#     target_group_arn = aws_lb_target_group.tg.arn 
-#     type = "forward"
-#   }
-# }
 
-# output "loadbancerip" {
-#   value = aws_lb.lb.dns_name
-# }
+# ## Target group attachment to the EC2 instance
+resource "aws_lb_target_group_attachment" "frontend_tg_attach" {
+  for_each         = toset(data.aws_autoscaling_groups.eks_node_asgs.names)
+  target_group_arn = aws_lb_target_group.frontend_tg.arn
+  target_id        = each.value
+  port             = 31080
+}
+
+# 4. Listener (forward from ALB port 80 to target group)
+resource "aws_lb_listener" "frontend_listener" {
+  load_balancer_arn = aws_lb.frontend_lb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend_tg.arn
+  }
+}
+
+
+

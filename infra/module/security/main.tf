@@ -1,6 +1,6 @@
 
 #Security Group for Public Subnet
-# This Terraform script creates a security group that allows inbound SSH traffic and all outbound traffic for the worker nodes
+#Exposing these ports just for demo purposes, not recommended for production
 
 provider "aws" {
   region = var.region_main
@@ -17,6 +17,15 @@ resource "aws_security_group" "sg" {
     description = "SSH to VPC"
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  ingress {
+    description = "expose frontend app on port 31080"
+    from_port   = 31080
+    to_port     = 31080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

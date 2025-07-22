@@ -106,3 +106,20 @@ variable "instance_type" {
   type        = string
   # default = "t2.micro"
 }
+
+
+variable "eks_node_group_name" {
+  type        = string
+  # default = "t2.micro"
+}
+
+
+variable "eks_node_group_id" {
+  type        = string
+  # default = "t2.micro"
+}
+
+variable "security_group_id" {
+  type        = string
+  
+}

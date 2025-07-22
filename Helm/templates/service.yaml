@@ -13,7 +13,8 @@ spec:
       name: httpterr
       targetPort: 5173
       protocol: TCP 
-  type: LoadBalancer
+  type: NodePort
+  nodePort: 31080
 
   
 ---
