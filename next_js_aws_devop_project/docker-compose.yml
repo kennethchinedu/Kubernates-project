@@ -1,6 +1,8 @@
 # version: '3.8'
-services:
+#For development purposes only, not recommended for production use.
+# This docker-compose file sets up a simple development environment with a frontend and backend service.
 
+services:
   db:
     container_name: postgres
     image: postgres
@@ -50,7 +52,6 @@ services:
       - backend
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    # command: npm run dev
     networks:
       - prod_network
 
