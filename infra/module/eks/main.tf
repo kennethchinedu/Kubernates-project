@@ -92,21 +92,21 @@ resource "aws_iam_role_policy_attachment" "eks-ng-ContainerRegistryReadOnly" {
 
 #Launch Template for EKS Node Group
 
-resource "aws_launch_template" "eks_node_group_lt" {
-  name_prefix   = "eks-node-"
-  # image_id      = "ami-xxxxxxxxxxxx" # EKS optimized AMI
-  instance_type = "t3.medium"
+# resource "aws_launch_template" "eks_node_group_lt" {
+#   name_prefix   = "eks-node-"
+#   # image_id      = "ami-xxxxxxxxxxxx" # EKS optimized AMI
+#   instance_type = "t3.medium"
 
-  vpc_security_group_ids = [
-    var.security_group_id
-  ]
+#   vpc_security_group_ids = [
+#     var.security_group_id
+#   ]
 
-  key_name = "kube-demo" 
+#   key_name = "kube-demo" 
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 
 resource "aws_eks_node_group" "eks-node-group" {
@@ -117,10 +117,10 @@ resource "aws_eks_node_group" "eks-node-group" {
     var.public_subnet_ids
 
   ]
-  launch_template {
-    id      = aws_launch_template.eks_node_group_lt.id
-    version = "$Latest"
-  }
+  # launch_template {
+  #   id      = aws_launch_template.eks_node_group_lt.id
+  #   version = "$Latest"
+  # }
   scaling_config {
     desired_size = 1
     max_size     = 4
@@ -130,10 +130,11 @@ resource "aws_eks_node_group" "eks-node-group" {
     max_unavailable = 1
   }
 
-  # remote_access {
-  #   source_security_group_ids = [var.security_group_id]
+  remote_access {
+    # source_security_group_ids = [var.security_group_id]
+    ec2_ssh_key               = "kube-demo" 
     
-  # }
+  }
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [

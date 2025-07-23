@@ -142,7 +142,7 @@ resource "aws_lb" "frontend_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.security_group_id]
-  subnets            = aws_subnet.public_subnet[*].id
+  subnets            = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
 } 
 
 # #creating target group for load balancer
